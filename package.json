@@ -40,23 +40,20 @@
     ],
     "publish": {
       "provider": "github",
-      "owner": "jrember",
+      "owner": "RememberingHope",
       "repo": "AlphaHunters",
       "releaseType": "release"
     },
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico",
       "publisherName": "AlphaHunters Team"
     },
     "mac": {
       "target": "dmg",
-      "icon": "assets/icon.icns",
       "category": "public.app-category.education"
     },
     "linux": {
       "target": "AppImage",
-      "icon": "assets/icon.png",
       "category": "Education"
     },
     "nsis": {

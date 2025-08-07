@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Icon Generator</title>
+</head>
+<body>
+    <h1>AlphaHunters Icon Generator</h1>
+    <p>This creates a simple placeholder icon. For a professional icon, use a graphics program.</p>
+    
+    <canvas id="canvas" width="256" height="256" style="border: 1px solid #000;"></canvas>
+    
+    <br><br>
+    <button onclick="downloadPNG()">Download PNG (256x256)</button>
+    
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        
+        // Background gradient
+        const gradient = ctx.createLinearGradient(0, 0, 256, 256);
+        gradient.addColorStop(0, '#4CAF50');
+        gradient.addColorStop(1, '#2196F3');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(0, 0, 256, 256);
+        
+        // Circle background
+        ctx.beginPath();
+        ctx.arc(128, 128, 100, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.fill();
+        
+        // Letter "A"
+        ctx.fillStyle = '#333';
+        ctx.font = 'bold 120px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('A', 128, 128);
+        
+        // Small "H" for Hunters
+        ctx.font = 'bold 40px Arial';
+        ctx.fillStyle = '#2196F3';
+        ctx.fillText('H', 180, 180);
+        
+        function downloadPNG() {
+            const link = document.createElement('a');
+            link.download = 'icon.png';
+            link.href = canvas.toDataURL();
+            link.click();
+        }
+    </script>
+    
+    <br><br>
+    <p>Note: For Windows .ico files, use an online converter or tool like:</p>
+    <ul>
+        <li>https://convertio.co/png-ico/</li>
+        <li>https://icoconvert.com/</li>
+        <li>Or use ImageMagick: convert icon.png icon.ico</li>
+    </ul>
+</body>
+</html>

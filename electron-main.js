@@ -15,8 +15,7 @@ function createWindow() {
             nodeIntegration: true,
             contextIsolation: false,
             webSecurity: false
-        },
-        icon: path.join(__dirname, 'assets/icon.png') // You can add an icon later
+        }
     });
 
     mainWindow.loadFile('index.html');

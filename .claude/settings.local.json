@@ -10,7 +10,24 @@
       "Bash(git config:*)",
       "Bash(npm install:*)",
       "Bash(git init:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(gh repo create:*)",
+      "Bash(git branch:*)",
+      "Bash(git remote add:*)",
+      "Bash(git push:*)",
+      "Bash(git remote get-url:*)",
+      "Bash(git remote set-url:*)",
+      "Bash(git pull:*)",
+      "Bash(git tag:*)",
+      "Bash(mkdir:*)",
+      "Bash(npm run build-win:*)",
+      "Bash(rmdir:*)",
+      "Bash(powershell:*)",
+      "Bash(set CSC_IDENTITY_AUTO_DISCOVERY=false)",
+      "Bash(cmd:*)",
+      "Bash(./build-win.bat)",
+      "Bash(npx electron-builder:*)"
     ],
     "deny": []
   }

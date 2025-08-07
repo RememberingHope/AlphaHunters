@@ -1,0 +1,33 @@
+{
+  "appId": "com.alphahunters.game",
+  "productName": "AlphaHunters",
+  "directories": {
+    "output": "dist"
+  },
+  "files": [
+    "**/*",
+    "!dist",
+    "!.git",
+    "!.gitignore",
+    "!*.md",
+    "!test-*.html"
+  ],
+  "win": {
+    "target": "nsis",
+    "publisherName": "AlphaHunters Team",
+    "verifyUpdateCodeSignature": false,
+    "signAndEditExecutable": false
+  },
+  "nsis": {
+    "oneClick": false,
+    "allowToChangeInstallationDirectory": true,
+    "createDesktopShortcut": true,
+    "createStartMenuShortcut": true
+  },
+  "publish": {
+    "provider": "github",
+    "owner": "RememberingHope",
+    "repo": "AlphaHunters",
+    "releaseType": "release"
+  }
+}
