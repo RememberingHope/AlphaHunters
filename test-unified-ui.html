@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaHunter - Unified UI Test</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            font-family: 'Comic Sans MS', cursive;
+            padding: 20px;
+            overflow: hidden;
+        }
+        
+        /* Mock game canvas area */
+        .game-area {
+            position: relative;
+            width: 100%;
+            height: 90vh;
+            background: rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        .mock-canvas {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 800px;
+            height: 600px;
+            background: #4CAF50;
+            border: 3px solid #2E7D32;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+        
+        /* Make HUD visible */
+        #hudOverlay {
+            display: flex !important;
+        }
+        
+        .status-bar {
+            position: fixed;
+            bottom: 10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 20px;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-area">
+        <div class="mock-canvas">Mock Game Canvas</div>
+        
+        <!-- HUD with leaderboard -->
+        <div id="hudOverlay" class="overlay">
+            <div class="hud-left">
+                <div id="xpBar" class="hud-element">
+                    <div class="label">XP</div>
+                    <div class="bar">
+                        <div class="fill" style="width: 30%;"></div>
+                    </div>
+                </div>
+                <div id="coinCounter" class="hud-element">
+                    <span class="icon">🪙</span>
+                    <span class="count">500</span>
+                </div>
+                <div id="levelDisplay" class="hud-element">
+                    <span class="label">Level</span>
+                    <span class="value">3</span>
+                </div>
+            </div>
+            
+            <!-- Leaderboard (right side) -->
+            <div id="leaderboard" class="hud-element leaderboard">
+                <div class="leaderboard-header">
+                    <span class="icon">🏆</span>
+                    <span class="title">Leaderboard</span>
+                </div>
+                <div id="leaderboardList" class="leaderboard-list">
+                    <!-- Will be populated -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Friends Panel (left side) -->
+        <div class="combined-panel" id="testPanel" style="display: block;">
+            <div class="panel-content">
+                <h3 style="text-align: center; margin-bottom: var(--space-sm); font-size: var(--ui-scale-medium);">
+                    👫 Friends
+                </h3>
+                
+                <div id="multiplayerContent">
+                    <div class="multiplayer-status" id="multiplayerStatus" style="display: flex; gap: var(--space-xs);">
+                        <button class="quick-action-btn" style="flex: 1;" onclick="simulateHost()">
+                            🏠 Host
+                        </button>
+                        <button class="quick-action-btn" style="flex: 1;" onclick="simulateJoin()">
+                            🔗 Join
+                        </button>
+                    </div>
+                    
+                    <div id="roomInfo" style="display: none;">
+                        <div class="room-code-display">
+                            <span style="font-size: var(--ui-scale-small);">Room:</span>
+                            <span id="miniRoomCode" class="room-code-mini">1234</span>
+                        </div>
+                        <div id="playerList" class="player-list">
+                            <!-- Will be populated -->
+                        </div>
+                        <button class="quick-action-btn danger" onclick="simulateLeave()">
+                            ❌ Leave
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="status-bar" id="statusBar">
+        Press buttons to simulate multiplayer actions
+    </div>
+    
+    <script>
+        // Mock data
+        const mockBots = [
+            { name: 'Max', score: 850, emoji: '🤖' },
+            { name: 'Luna', score: 720, emoji: '👾' },
+            { name: 'Charlie', score: 650, emoji: '🐱' },
+            { name: 'Bella', score: 580, emoji: '🐶' },
+            { name: 'Oliver', score: 450, emoji: '🦊' }
+        ];
+        
+        const mockMPPlayers = [
+            { name: 'Alice', score: 900, emoji: '🌟' },
+            { name: 'Bob', score: 600, emoji: '💫' }
+        ];
+        
+        let isHosting = false;
+        let hasJoined = false;
+        
+        function updateLeaderboard(includeMP = false) {
+            const entries = [
+                { name: 'You', score: 750, isPlayer: true }
+            ];
+            
+            if (includeMP) {
+                mockMPPlayers.forEach(p => {
+                    entries.push({
+                        name: `${p.emoji} ${p.name}`,
+                        score: p.score,
+                        isMultiplayer: true
+                    });
+                });
+            }
+            
+            mockBots.forEach(bot => {
+                entries.push({
+                    name: bot.name,
+                    score: bot.score
+                });
+            });
+            
+            // Sort and rank
+            entries.sort((a, b) => b.score - a.score);
+            entries.forEach((e, i) => e.rank = i + 1);
+            
+            // Display
+            const list = document.getElementById('leaderboardList');
+            list.innerHTML = '';
+            
+            entries.slice(0, 10).forEach(entry => {
+                const div = document.createElement('div');
+                let className = 'leaderboard-entry';
+                if (entry.isPlayer) className += ' player';
+                else if (entry.isMultiplayer) className += ' multiplayer';
+                div.className = className;
+                
+                const rankDisplay = entry.rank === 1 ? '🥇' : 
+                                  entry.rank === 2 ? '🥈' : 
+                                  entry.rank === 3 ? '🥉' : entry.rank;
+                
+                div.innerHTML = `
+                    <span class="leaderboard-rank">${rankDisplay}</span>
+                    <span class="leaderboard-name">${entry.name}</span>
+                    <span class="leaderboard-score">${entry.score}</span>
+                `;
+                
+                list.appendChild(div);
+            });
+        }
+        
+        function updatePlayerList() {
+            const list = document.getElementById('playerList');
+            list.innerHTML = '';
+            
+            // Add self
+            const self = document.createElement('div');
+            self.className = 'player-entry self';
+            self.innerHTML = `<span>😊 You</span><span>750 ⭐</span>`;
+            list.appendChild(self);
+            
+            // Add other players
+            mockMPPlayers.forEach(p => {
+                const div = document.createElement('div');
+                div.className = 'player-entry';
+                div.innerHTML = `<span>${p.emoji} ${p.name}</span><span>${p.score} ⭐</span>`;
+                list.appendChild(div);
+            });
+        }
+        
+        function simulateHost() {
+            isHosting = true;
+            document.getElementById('multiplayerStatus').style.display = 'none';
+            document.getElementById('roomInfo').style.display = 'block';
+            document.getElementById('miniRoomCode').textContent = '5678';
+            updatePlayerList();
+            updateLeaderboard(true);
+            updateStatus('Hosting room 5678 - Other players joined!');
+        }
+        
+        function simulateJoin() {
+            hasJoined = true;
+            document.getElementById('multiplayerStatus').style.display = 'none';
+            document.getElementById('roomInfo').style.display = 'block';
+            updatePlayerList();
+            updateLeaderboard(true);
+            updateStatus('Joined room - Playing with friends!');
+        }
+        
+        function simulateLeave() {
+            isHosting = false;
+            hasJoined = false;
+            document.getElementById('multiplayerStatus').style.display = 'flex';
+            document.getElementById('roomInfo').style.display = 'none';
+            updateLeaderboard(false);
+            updateStatus('Left multiplayer room');
+        }
+        
+        function updateStatus(message) {
+            document.getElementById('statusBar').textContent = message;
+        }
+        
+        // Initialize
+        updateLeaderboard(false);
+    </script>
+</body>
+</html>

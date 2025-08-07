@@ -1,0 +1,521 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaHunter Multiplayer Test</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: 'Comic Sans MS', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 48px;
+            margin-bottom: 30px;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: 4px solid #fff;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 15px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            margin: 10px;
+            transition: all 0.3s;
+            font-family: inherit;
+        }
+        
+        button:hover {
+            transform: scale(1.05);
+        }
+        
+        #status {
+            font-size: 20px;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            min-height: 100px;
+        }
+        
+        .room-code {
+            font-size: 80px;
+            font-weight: bold;
+            letter-spacing: 20px;
+            margin: 30px 0;
+            text-shadow: 3px 3px 6px rgba(0, 0, 0, 0.3);
+        }
+        
+        .player-list {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .player-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 10px;
+            margin: 5px 0;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+        
+        .instructions {
+            background: rgba(255, 255, 0, 0.2);
+            border: 2px solid rgba(255, 255, 0, 0.5);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎮 AlphaHunter Multiplayer Test 🎮</h1>
+        
+        <div class="instructions">
+            <h2>📋 Instructions:</h2>
+            <ol style="text-align: left; display: inline-block;">
+                <li>Open this page in two different browser windows</li>
+                <li>In Window 1: Click "Create Test Room"</li>
+                <li>Note the 4-digit room code that appears</li>
+                <li>In Window 2: Click "Join Test Room" and enter the code</li>
+                <li>Both windows should show "Connected!"</li>
+            </ol>
+        </div>
+        
+        <div class="test-section">
+            <h2>🧪 PeerJS Connection Test</h2>
+            <button onclick="createRoom()">🏠 Create Test Room</button>
+            <button onclick="showJoinDialog()">🔗 Join Test Room</button>
+            <button onclick="toggleSimulation()" id="simBtn" style="background: linear-gradient(135deg, #FF9800, #F57C00);">🎮 Start Simulation</button>
+            
+            <div id="roomCodeDisplay" style="display: none;">
+                <h3>Room Code:</h3>
+                <div class="room-code" id="roomCode"></div>
+            </div>
+            
+            <div id="joinDialog" style="display: none;">
+                <h3>Enter Room Code:</h3>
+                <input type="text" id="joinCode" maxlength="4" style="
+                    font-size: 48px;
+                    width: 200px;
+                    text-align: center;
+                    padding: 10px;
+                    border: 3px solid #fff;
+                    border-radius: 10px;
+                    background: rgba(255,255,255,0.2);
+                    color: white;
+                ">
+                <br><br>
+                <button onclick="joinRoom()">✅ Join!</button>
+                <button onclick="hideJoinDialog()">❌ Cancel</button>
+            </div>
+            
+            <div id="status">Ready to test...</div>
+            
+            <div id="playerList" class="player-list" style="display: none;">
+                <h3>Connected Players:</h3>
+                <div id="players"></div>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h2>🔍 Connection Info</h2>
+            <div id="connectionInfo" style="text-align: left; background: rgba(0,0,0,0.3); padding: 20px; border-radius: 10px;">
+                <p>Peer ID: <span id="peerId">Not connected</span></p>
+                <p>Status: <span id="connStatus">Disconnected</span></p>
+                <p>Room: <span id="roomInfo">None</span></p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script>
+        let peer = null;
+        let connections = new Map();
+        let roomCode = null;
+        let isHost = false;
+        let players = new Map();
+        
+        function log(message) {
+            const status = document.getElementById('status');
+            const time = new Date().toLocaleTimeString();
+            status.innerHTML = `[${time}] ${message}<br>` + status.innerHTML;
+        }
+        
+        function updateConnectionInfo() {
+            document.getElementById('peerId').textContent = peer ? peer.id : 'Not connected';
+            document.getElementById('connStatus').textContent = peer && !peer.destroyed ? 'Connected' : 'Disconnected';
+            document.getElementById('roomInfo').textContent = roomCode || 'None';
+        }
+        
+        function createRoom() {
+            log('Creating room...');
+            
+            // Generate 4-digit room code
+            roomCode = Math.floor(1000 + Math.random() * 9000).toString();
+            isHost = true;
+            
+            // Create peer with room code as ID (same prefix as game)
+            peer = new Peer('alphahunter_' + roomCode, {
+                debug: 2,
+                config: {
+                    'iceServers': [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                }
+            });
+            
+            peer.on('open', (id) => {
+                log(`✅ Room created! Code: ${roomCode}`);
+                document.getElementById('roomCode').textContent = roomCode;
+                document.getElementById('roomCodeDisplay').style.display = 'block';
+                updateConnectionInfo();
+                
+                // Add self to players
+                players.set('host', {
+                    id: 'host',
+                    name: 'Host Player',
+                    isHost: true
+                });
+                updatePlayerList();
+            });
+            
+            peer.on('error', (err) => {
+                log(`❌ Error: ${err.message}`);
+                if (err.type === 'unavailable-id') {
+                    log('Room code already taken, trying another...');
+                    createRoom();
+                }
+            });
+            
+            peer.on('connection', (conn) => {
+                log(`📥 Incoming connection from ${conn.peer}`);
+                handleConnection(conn);
+            });
+        }
+        
+        function showJoinDialog() {
+            document.getElementById('joinDialog').style.display = 'block';
+            document.getElementById('joinCode').focus();
+        }
+        
+        function hideJoinDialog() {
+            document.getElementById('joinDialog').style.display = 'none';
+        }
+        
+        function joinRoom() {
+            const code = document.getElementById('joinCode').value;
+            if (code.length !== 4) {
+                log('❌ Please enter a 4-digit code');
+                return;
+            }
+            
+            log(`Joining room ${code}...`);
+            roomCode = code;
+            isHost = false;
+            
+            // Create peer with unique ID
+            const joinerId = 'player_' + Math.random().toString(36).substr(2, 9);
+            peer = new Peer(joinerId, {
+                debug: 2,
+                config: {
+                    'iceServers': [
+                        { urls: 'stun:stun.l.google.com:19302' },
+                        { urls: 'stun:stun1.l.google.com:19302' }
+                    ]
+                }
+            });
+            
+            peer.on('open', (id) => {
+                log('Connected to PeerJS, attempting to join room...');
+                updateConnectionInfo();
+                
+                // Connect to host
+                const hostId = 'alphahunter_' + code;
+                const conn = peer.connect(hostId, {
+                    reliable: true,
+                    metadata: {
+                        name: 'Test Player'
+                    }
+                });
+                
+                conn.on('open', () => {
+                    log(`✅ Connected to room ${code}!`);
+                    connections.set('host', conn);
+                    hideJoinDialog();
+                    
+                    // Send join message (matching game protocol)
+                    conn.send({
+                        type: 'join_request',
+                        player: {
+                            name: 'Test Player',
+                            emoji: '🧪'
+                        }
+                    });
+                });
+                
+                conn.on('error', (err) => {
+                    log(`❌ Connection error: ${err}`);
+                });
+                
+                conn.on('data', (data) => {
+                    handleMessage(data, 'host');
+                });
+            });
+            
+            peer.on('error', (err) => {
+                log(`❌ Error: ${err.message}`);
+            });
+        }
+        
+        function handleConnection(conn) {
+            conn.on('open', () => {
+                log(`✅ Connection established with ${conn.peer}`);
+                connections.set(conn.peer, conn);
+                
+                conn.on('data', (data) => {
+                    handleMessage(data, conn.peer);
+                });
+                
+                conn.on('close', () => {
+                    log(`👋 ${conn.peer} disconnected`);
+                    connections.delete(conn.peer);
+                    players.delete(conn.peer);
+                    updatePlayerList();
+                });
+            });
+        }
+        
+        function handleMessage(message, from) {
+            log(`📨 Message from ${from}: ${message.type}`);
+            
+            switch (message.type) {
+                case 'join_request':
+                    // Host handles join request (matching game protocol)
+                    if (isHost) {
+                        const playerId = 'test_player_' + Date.now();
+                        const playerInfo = {
+                            id: playerId,
+                            name: message.player.name,
+                            emoji: message.player.emoji || '🧪',
+                            isHost: false
+                        };
+                        
+                        players.set(from, playerInfo);
+                        updatePlayerList();
+                        
+                        // Send room info (matching game protocol)
+                        const conn = connections.get(from);
+                        if (conn) {
+                            conn.send({
+                                type: 'room_info',
+                                levelId: 'intro',
+                                players: Array.from(players.values())
+                            });
+                            
+                            // Also send game state
+                            conn.send({
+                                type: 'game_state',
+                                players: Array.from(players.values())
+                            });
+                        }
+                        
+                        // Notify others
+                        broadcast({
+                            type: 'player_joined',
+                            player: playerInfo
+                        }, from);
+                    }
+                    break;
+                    
+                case 'room_info':
+                    // Joiner receives room info (matching game protocol)
+                    log('✅ Received room info, join successful!');
+                    if (message.players) {
+                        message.players.forEach(p => {
+                            players.set(p.id, p);
+                        });
+                        updatePlayerList();
+                    }
+                    break;
+                    
+                case 'game_state':
+                    // Joiner receives game state
+                    log('📊 Received game state');
+                    break;
+                    
+                case 'player_joined':
+                    players.set(message.player.id, message.player);
+                    updatePlayerList();
+                    break;
+                    
+                case 'player_update':
+                    // Handle player position updates
+                    const player = players.get(message.playerId);
+                    if (player) {
+                        player.x = message.position.x;
+                        player.y = message.position.y;
+                        player.score = message.score;
+                        log(`📍 Player ${message.playerId} moved to (${Math.round(message.position.x)}, ${Math.round(message.position.y)})`);
+                    }
+                    break;
+                    
+                case 'letterling_spawn':
+                    log(`✨ Letterling '${message.letter}' spawned at (${Math.round(message.position.x)}, ${Math.round(message.position.y)})`);
+                    break;
+                    
+                case 'letterling_collected':
+                    log(`🎯 Player ${message.playerId} collected letterling '${message.letter}' for ${message.points} points!`);
+                    break;
+            }
+        }
+        
+        function broadcast(message, exclude = null) {
+            connections.forEach((conn, peerId) => {
+                if (peerId !== exclude && conn.open) {
+                    conn.send(message);
+                }
+            });
+        }
+        
+        function updatePlayerList() {
+            const container = document.getElementById('players');
+            container.innerHTML = '';
+            
+            players.forEach(player => {
+                const div = document.createElement('div');
+                div.className = 'player-item';
+                div.innerHTML = `
+                    <span>${player.name} ${player.isHost ? '👑' : ''}</span>
+                    <span>${player.isHost ? 'Host' : 'Player'}</span>
+                `;
+                container.appendChild(div);
+            });
+            
+            document.getElementById('playerList').style.display = players.size > 0 ? 'block' : 'none';
+        }
+        
+        // Simulation mode
+        let simulationInterval = null;
+        let simulationActive = false;
+        let playerX = 400;
+        let playerY = 300;
+        let playerVx = 0;
+        let playerVy = 0;
+        
+        function toggleSimulation() {
+            if (!isHost) {
+                log('⚠️ Only the host can start simulation');
+                return;
+            }
+            
+            simulationActive = !simulationActive;
+            const btn = document.getElementById('simBtn');
+            
+            if (simulationActive) {
+                btn.textContent = '⏸️ Stop Simulation';
+                startSimulation();
+            } else {
+                btn.textContent = '🎮 Start Simulation';
+                stopSimulation();
+            }
+        }
+        
+        function startSimulation() {
+            log('🎮 Starting game simulation...');
+            
+            // Simulate letterling spawns
+            let letterlingId = 0;
+            setInterval(() => {
+                if (simulationActive && Math.random() < 0.3) {
+                    const letters = 'abcdefghijklmnopqrstuvwxyz';
+                    const letter = letters[Math.floor(Math.random() * letters.length)];
+                    const x = Math.random() * 800;
+                    const y = Math.random() * 600;
+                    
+                    broadcast({
+                        type: 'letterling_spawn',
+                        id: `sim_letterling_${letterlingId++}`,
+                        letter: letter,
+                        position: { x: x, y: y },
+                        velocity: { x: (Math.random() - 0.5) * 100, y: (Math.random() - 0.5) * 100 }
+                    });
+                }
+            }, 3000);
+            
+            // Simulate player movement
+            simulationInterval = setInterval(() => {
+                if (!simulationActive) return;
+                
+                // Random movement
+                playerVx += (Math.random() - 0.5) * 50;
+                playerVy += (Math.random() - 0.5) * 50;
+                
+                // Apply friction
+                playerVx *= 0.9;
+                playerVy *= 0.9;
+                
+                // Update position
+                playerX += playerVx * 0.016;
+                playerY += playerVy * 0.016;
+                
+                // Keep in bounds
+                playerX = Math.max(50, Math.min(750, playerX));
+                playerY = Math.max(50, Math.min(550, playerY));
+                
+                // Send update
+                broadcast({
+                    type: 'player_update',
+                    playerId: 'host',
+                    position: { x: playerX, y: playerY },
+                    velocity: { x: playerVx, y: playerVy },
+                    score: Math.floor(Math.random() * 100)
+                });
+            }, 50);
+        }
+        
+        function stopSimulation() {
+            log('⏹️ Stopping simulation');
+            if (simulationInterval) {
+                clearInterval(simulationInterval);
+                simulationInterval = null;
+            }
+        }
+        
+        // Clean up on page unload
+        window.addEventListener('beforeunload', () => {
+            if (peer) {
+                peer.destroy();
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,72 @@
+{
+  "name": "alphahunters",
+  "version": "0.1.0",
+  "description": "AlphaHunters - Educational Letter Tracing Adventure Game",
+  "main": "electron-main.js",
+  "author": "jrember",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jrember/AlphaHunters.git"
+  },
+  "scripts": {
+    "start": "electron .",
+    "start-dev": "NODE_ENV=development electron .",
+    "start-server": "cd server && npm start",
+    "install-all": "npm install && cd server && npm install",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux",
+    "release": "electron-builder --publish always"
+  },
+  "devDependencies": {
+    "electron": "^27.0.0",
+    "electron-builder": "^24.6.4"
+  },
+  "build": {
+    "appId": "com.alphahunters.game",
+    "productName": "AlphaHunters",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "**/*",
+      "!dist",
+      "!.git",
+      "!.gitignore",
+      "!*.md",
+      "!test-*.html"
+    ],
+    "publish": {
+      "provider": "github",
+      "owner": "jrember",
+      "repo": "AlphaHunters",
+      "releaseType": "release"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico",
+      "publisherName": "AlphaHunters Team"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns",
+      "category": "public.app-category.education"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png",
+      "category": "Education"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true
+    }
+  },
+  "dependencies": {
+    "electron-updater": "^6.6.2"
+  }
+}

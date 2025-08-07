@@ -1,0 +1,395 @@
+/* Responsive Scaling System for AlphaHunter */
+/* Designed to scale from 1366x768 to 4K resolution while maintaining readability */
+
+:root {
+    /* Base font size that scales with viewport */
+    --base-font-size: clamp(14px, 1.2vw, 20px);
+    
+    /* UI element scaling */
+    --ui-scale-small: clamp(0.8rem, 1vw, 1.2rem);
+    --ui-scale-medium: clamp(1rem, 1.3vw, 1.5rem);
+    --ui-scale-large: clamp(1.5rem, 2vw, 2.5rem);
+    --ui-scale-xlarge: clamp(2rem, 3vw, 4rem);
+    
+    /* Spacing that scales */
+    --space-xs: clamp(0.25rem, 0.5vw, 0.5rem);
+    --space-sm: clamp(0.5rem, 0.8vw, 1rem);
+    --space-md: clamp(1rem, 1.5vw, 2rem);
+    --space-lg: clamp(1.5rem, 2vw, 3rem);
+    --space-xl: clamp(2rem, 3vw, 4rem);
+    
+    /* Border radius that scales */
+    --radius-sm: clamp(8px, 1vw, 15px);
+    --radius-md: clamp(15px, 1.5vw, 25px);
+    --radius-lg: clamp(20px, 2vw, 35px);
+    
+    /* Button sizes */
+    --btn-padding-x: clamp(1rem, 2vw, 2.5rem);
+    --btn-padding-y: clamp(0.75rem, 1vw, 1.5rem);
+}
+
+/* Set base font size for entire document */
+html {
+    font-size: var(--base-font-size);
+}
+
+/* HUD Elements Responsive Scaling */
+.hud-element {
+    padding: 6px 12px;
+    font-size: clamp(13px, 1vw, 16px);
+    border-radius: var(--radius-sm);
+    gap: 6px;
+}
+
+.hud-left {
+    gap: var(--space-md);
+}
+
+#hudOverlay {
+    padding: var(--space-md);
+}
+
+/* XP Bar Scaling */
+#xpBar .bar {
+    width: clamp(120px, 12vw, 200px);
+    height: clamp(10px, 1vw, 16px);
+    border-radius: clamp(5px, 0.5vw, 8px);
+}
+
+/* Leaderboard Scaling */
+.leaderboard {
+    min-width: clamp(160px, 12vw, 220px);
+    max-width: clamp(180px, 15vw, 250px);
+    padding: var(--space-xs) !important;
+    margin-left: var(--space-md);
+    font-size: clamp(12px, 0.9vw, 14px);
+}
+
+.leaderboard-header {
+    font-size: var(--ui-scale-medium);
+    margin-bottom: var(--space-sm);
+    padding-bottom: var(--space-xs);
+    gap: var(--space-sm);
+}
+
+.leaderboard-entry {
+    padding: 4px 8px;
+    font-size: clamp(11px, 0.85vw, 13px);
+    border-radius: var(--radius-sm);
+    line-height: 1.2;
+}
+
+/* Button Scaling */
+.control-btn, .menu-btn {
+    padding: var(--btn-padding-y) var(--btn-padding-x);
+    font-size: var(--ui-scale-medium);
+    border-radius: var(--radius-md);
+    min-width: clamp(100px, 10vw, 160px);
+}
+
+/* Menu Content Scaling */
+.menu-content {
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    min-width: clamp(280px, 25vw, 450px);
+}
+
+.menu-content h2 {
+    font-size: var(--ui-scale-large);
+    margin-bottom: var(--space-lg);
+}
+
+/* Upgrade Menu Scaling */
+.upgrade-content {
+    padding: var(--space-lg);
+    border-radius: var(--radius-lg);
+    max-width: min(90%, 1200px);
+}
+
+.upgrade-content h2 {
+    font-size: var(--ui-scale-xlarge);
+    margin-bottom: var(--space-lg);
+}
+
+.upgrade-card {
+    width: clamp(200px, 20vw, 300px);
+    padding: var(--space-md);
+    border-radius: var(--radius-md);
+}
+
+.upgrade-icon {
+    font-size: clamp(36px, 3.5vw, 56px);
+    height: clamp(50px, 5vw, 80px);
+    margin-bottom: var(--space-md);
+}
+
+.upgrade-name {
+    font-size: var(--ui-scale-medium);
+    margin-bottom: var(--space-sm);
+}
+
+.upgrade-description {
+    font-size: var(--ui-scale-small);
+    margin-bottom: var(--space-md);
+}
+
+/* Multiplayer UI Scaling */
+#multiplayerMainBtn {
+    padding: var(--btn-padding-y) var(--btn-padding-x);
+    font-size: var(--ui-scale-medium);
+    border-radius: var(--radius-lg);
+    bottom: var(--space-md);
+    right: var(--space-md);
+}
+
+#simpleMultiplayerMenu > div {
+    padding: var(--space-xl);
+    border-radius: var(--radius-lg);
+    max-width: min(90%, 800px);
+}
+
+#simpleMultiplayerMenu h1 {
+    font-size: var(--ui-scale-xlarge);
+    margin-bottom: var(--space-xl);
+}
+
+#createRoomBtn, #joinRoomBtn {
+    padding: var(--space-lg) var(--space-xl);
+    font-size: var(--ui-scale-large);
+    border-radius: var(--radius-lg);
+}
+
+#backBtn {
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--ui-scale-medium);
+    border-radius: var(--radius-md);
+    margin-top: var(--space-md);
+}
+
+/* Room Code Display Scaling */
+#roomCodeBig {
+    padding: var(--space-xl) clamp(40px, 5vw, 80px);
+    border-radius: var(--radius-lg);
+}
+
+#roomCodeBig h2 {
+    font-size: var(--ui-scale-large);
+    margin-bottom: var(--space-md);
+}
+
+#bigRoomCode {
+    font-size: clamp(80px, 10vw, 140px);
+    letter-spacing: clamp(10px, 2vw, 30px);
+    margin: var(--space-md) 0;
+}
+
+#roomCodeBig p {
+    font-size: var(--ui-scale-medium);
+    margin: var(--space-md) 0;
+}
+
+#startGameBtn {
+    padding: var(--space-md) var(--space-xl);
+    font-size: var(--ui-scale-large);
+    border-radius: var(--radius-lg);
+    margin-top: var(--space-md);
+}
+
+/* Room Code Entry Scaling */
+#roomCodeEntry h2 {
+    font-size: var(--ui-scale-large);
+    margin-bottom: var(--space-lg);
+}
+
+#digit1, #digit2, #digit3, #digit4 {
+    width: clamp(60px, 8vw, 100px);
+    height: clamp(60px, 8vw, 100px);
+    font-size: clamp(36px, 4vw, 56px);
+    border-radius: var(--radius-md);
+}
+
+#goJoinBtn, #cancelJoinBtn {
+    padding: var(--space-md) var(--space-lg);
+    font-size: var(--ui-scale-large);
+    border-radius: var(--radius-md);
+}
+
+/* Player List Scaling */
+#funPlayerList {
+    right: var(--space-md);
+    top: clamp(60px, 8vh, 100px);
+    padding: var(--space-md);
+    border-radius: var(--radius-lg);
+    min-width: clamp(200px, 20vw, 300px);
+}
+
+#funPlayerList h3 {
+    font-size: var(--ui-scale-medium);
+    margin-bottom: var(--space-md);
+    gap: var(--space-sm);
+}
+
+.player-item {
+    padding: var(--space-md);
+    margin-bottom: var(--space-sm);
+    border-radius: var(--radius-md);
+    font-size: var(--ui-scale-small);
+}
+
+/* Consolidated Multiplayer/Leaderboard UI */
+.combined-panel {
+    position: fixed;
+    right: 10px;
+    bottom: 10px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px solid #333;
+    border-radius: var(--radius-md);
+    padding: 8px;
+    min-width: 120px;
+    max-width: 160px;
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+    font-size: clamp(11px, 0.85vw, 13px);
+    max-height: 250px;
+    overflow-y: auto;
+}
+
+.panel-tabs {
+    display: flex;
+    gap: var(--space-sm);
+    margin-bottom: var(--space-md);
+}
+
+.tab-button {
+    flex: 1;
+    padding: var(--space-sm);
+    font-size: var(--ui-scale-small);
+    background: rgba(0, 0, 0, 0.1);
+    border: 2px solid transparent;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tab-button.active {
+    background: linear-gradient(135deg, #4CAF50, #8BC34A);
+    color: white;
+    border-color: #2E7D32;
+}
+
+/* High DPI Adjustments */
+@media (min-resolution: 192dpi) and (min-width: 2560px) {
+    :root {
+        --base-font-size: clamp(16px, 1vw, 22px);
+    }
+}
+
+/* Ultra-wide display adjustments */
+@media (min-aspect-ratio: 21/9) {
+    .hud-element {
+        margin: 0 var(--space-md);
+    }
+    
+    .combined-panel {
+        right: clamp(2%, 5vw, 100px);
+    }
+}
+
+/* Small screen adjustments (1366x768) */
+@media (max-width: 1400px) {
+    :root {
+        --base-font-size: 14px;
+    }
+    
+    .upgrade-options {
+        gap: var(--space-sm);
+    }
+    
+    .upgrade-card {
+        width: clamp(180px, 18vw, 250px);
+    }
+}
+
+/* Mobile responsive (tablets and phones) */
+@media (max-width: 768px) {
+    :root {
+        --base-font-size: 16px;
+    }
+    
+    #hudOverlay {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    
+    .combined-panel {
+        position: static;
+        width: 100%;
+        max-width: none;
+        margin-bottom: var(--space-md);
+    }
+    
+    .upgrade-options {
+        flex-direction: column;
+    }
+    
+    .upgrade-card {
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+}
+
+/* Touch-friendly adjustments */
+@media (hover: none) and (pointer: coarse) {
+    :root {
+        --btn-padding-y: clamp(1rem, 1.5vw, 2rem);
+    }
+    
+    .clickable-hud {
+        min-height: 44px; /* iOS touch target size */
+    }
+    
+    .tab-button {
+        min-height: 44px;
+    }
+}
+
+/* Available Letters Panel Scaling */
+#spawnPoolPanel {
+    position: fixed !important;
+    left: 10px !important;
+    bottom: 10px !important;
+    width: clamp(140px, 10vw, 180px) !important;
+    max-width: 180px !important;
+    font-size: clamp(10px, 0.8vw, 12px) !important;
+    padding: 8px !important;
+}
+
+#spawnPoolPanel h3 {
+    font-size: clamp(12px, 0.9vw, 14px) !important;
+    margin: 0 0 6px 0 !important;
+}
+
+#spawnPoolPanel h4 {
+    font-size: clamp(11px, 0.85vw, 13px) !important;
+    margin: 4px 0 !important;
+}
+
+#spawnPoolPanel button {
+    font-size: clamp(10px, 0.8vw, 12px) !important;
+    padding: 4px 8px !important;
+}
+
+#currentPoolList .pool-letter,
+#upcomingPoolList .pool-letter {
+    width: 22px !important;
+    height: 22px !important;
+    font-size: 12px !important;
+    line-height: 22px !important;
+}
+
+/* Print styles */
+@media print {
+    .hud-element, .combined-panel, #multiplayerMainBtn {
+        display: none !important;
+    }
+}

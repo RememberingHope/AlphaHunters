@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaHunter - Responsive UI Test</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            color: white;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        
+        .test-container {
+            text-align: center;
+            padding: var(--space-lg);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-lg);
+            margin: var(--space-md);
+        }
+        
+        .test-button {
+            padding: var(--btn-padding-y) var(--btn-padding-x);
+            font-size: var(--ui-scale-medium);
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: 3px solid #fff;
+            border-radius: var(--radius-md);
+            color: white;
+            margin: var(--space-sm);
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .test-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+        
+        .info-panel {
+            background: rgba(0, 0, 0, 0.5);
+            padding: var(--space-md);
+            border-radius: var(--radius-md);
+            margin: var(--space-md);
+            max-width: 600px;
+        }
+        
+        .screen-info {
+            font-size: var(--ui-scale-small);
+            opacity: 0.8;
+        }
+        
+        h1 {
+            font-size: var(--ui-scale-xlarge);
+            margin-bottom: var(--space-lg);
+        }
+        
+        h2 {
+            font-size: var(--ui-scale-large);
+            margin-bottom: var(--space-md);
+        }
+        
+        .resolution-presets {
+            display: flex;
+            gap: var(--space-sm);
+            justify-content: center;
+            flex-wrap: wrap;
+            margin: var(--space-lg) 0;
+        }
+        
+        .preset-btn {
+            padding: var(--space-sm) var(--space-md);
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: var(--radius-sm);
+            color: white;
+            cursor: pointer;
+            font-size: var(--ui-scale-small);
+            transition: all 0.2s;
+        }
+        
+        .preset-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.05);
+        }
+        
+        .viewport-info {
+            position: fixed;
+            top: var(--space-md);
+            right: var(--space-md);
+            background: rgba(0, 0, 0, 0.7);
+            padding: var(--space-sm) var(--space-md);
+            border-radius: var(--radius-sm);
+            font-size: var(--ui-scale-small);
+        }
+    </style>
+</head>
+<body>
+    <div class="viewport-info" id="viewportInfo">
+        Width: <span id="viewportWidth">-</span>px | 
+        Height: <span id="viewportHeight">-</span>px |
+        Base Font: <span id="baseFontSize">-</span>
+    </div>
+    
+    <div class="test-container">
+        <h1>🎮 AlphaHunter UI Scaling Test</h1>
+        
+        <div class="info-panel">
+            <h2>Test Responsive UI Elements</h2>
+            <p class="screen-info">
+                This page tests the responsive scaling system from 1366x768 to 4K resolution.
+                Try resizing your browser window or using the presets below.
+            </p>
+        </div>
+        
+        <div class="resolution-presets">
+            <button class="preset-btn" onclick="setWindowSize(1366, 768)">1366x768</button>
+            <button class="preset-btn" onclick="setWindowSize(1920, 1080)">1920x1080 (HD)</button>
+            <button class="preset-btn" onclick="setWindowSize(2560, 1440)">2560x1440 (2K)</button>
+            <button class="preset-btn" onclick="setWindowSize(3840, 2160)">3840x2160 (4K)</button>
+        </div>
+        
+        <div style="display: flex; gap: var(--space-md); flex-wrap: wrap; justify-content: center;">
+            <button class="test-button">
+                <div style="font-size: var(--ui-scale-xlarge);">👫</div>
+                <div>Multiplayer</div>
+                <div style="font-size: var(--ui-scale-small); opacity: 0.8;">Play Together!</div>
+            </button>
+            
+            <button class="test-button">
+                <div style="font-size: var(--ui-scale-xlarge);">🎮</div>
+                <div>Play Level</div>
+                <div style="font-size: var(--ui-scale-small); opacity: 0.8;">Start Adventure</div>
+            </button>
+            
+            <button class="test-button">
+                <div style="font-size: var(--ui-scale-xlarge);">🏆</div>
+                <div>Leaderboard</div>
+                <div style="font-size: var(--ui-scale-small); opacity: 0.8;">View Scores</div>
+            </button>
+        </div>
+        
+        <!-- Test Combined Panel -->
+        <div class="combined-panel" style="position: relative; margin: var(--space-lg) auto;">
+            <div class="panel-tabs">
+                <button class="tab-button active">🏆 Scores</button>
+                <button class="tab-button">👫 Friends</button>
+            </div>
+            <div class="panel-content">
+                <div class="leaderboard-list">
+                    <div class="leaderboard-entry">
+                        <span class="leaderboard-rank">🥇</span>
+                        <span class="leaderboard-name">Player 1</span>
+                        <span class="leaderboard-score">1000 ⭐</span>
+                    </div>
+                    <div class="leaderboard-entry player">
+                        <span class="leaderboard-rank">🥈</span>
+                        <span class="leaderboard-name">You</span>
+                        <span class="leaderboard-score">850 ⭐</span>
+                    </div>
+                    <div class="leaderboard-entry">
+                        <span class="leaderboard-rank">🥉</span>
+                        <span class="leaderboard-name">Player 3</span>
+                        <span class="leaderboard-score">600 ⭐</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        function updateViewportInfo() {
+            document.getElementById('viewportWidth').textContent = window.innerWidth;
+            document.getElementById('viewportHeight').textContent = window.innerHeight;
+            
+            const computedStyle = getComputedStyle(document.documentElement);
+            const fontSize = computedStyle.getPropertyValue('font-size');
+            document.getElementById('baseFontSize').textContent = fontSize;
+        }
+        
+        function setWindowSize(width, height) {
+            // This won't actually resize the window (browser security), 
+            // but shows intent for testing
+            alert(`To test ${width}x${height}, please manually resize your browser window\nor use browser developer tools responsive mode.`);
+        }
+        
+        // Update info on load and resize
+        updateViewportInfo();
+        window.addEventListener('resize', updateViewportInfo);
+        
+        // Test tab switching
+        document.querySelectorAll('.tab-button').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                e.target.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

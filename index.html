@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaHunters - Letter Tracing Adventure</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- UI Overlays -->
+        <div id="hudOverlay" class="overlay hidden">
+            <div class="hud-left">
+                <div id="xpBar" class="hud-element">
+                    <div class="label">XP</div>
+                    <div class="bar">
+                        <div class="fill"></div>
+                    </div>
+                </div>
+                <div id="coinCounter" class="hud-element clickable-hud" onclick="game.skinManager?.showSkinShop()">
+                    <span class="icon">🪙</span>
+                    <span class="count">0</span>
+                    <span class="shop-hint">🛍️</span>
+                </div>
+                <div id="levelDisplay" class="hud-element">
+                    <span class="label">Level</span>
+                    <span class="value">1</span>
+                </div>
+            </div>
+            
+            <!-- Leaderboard -->
+            <div id="leaderboard" class="hud-element leaderboard">
+                <div class="leaderboard-header">
+                    <span class="icon">🏆</span>
+                    <span class="title">Leaderboard</span>
+                </div>
+                <div id="leaderboardList" class="leaderboard-list">
+                    <!-- Leaderboard entries will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Trace Panel Overlay -->
+        <div id="tracePanel" class="overlay hidden">
+            <div class="panel-content">
+                <canvas id="traceCanvas"></canvas>
+                <div class="trace-controls">
+                    <button id="retryBtn" class="control-btn">🔄 Retry</button>
+                    <button id="practiceBtn" class="control-btn">📚 Practice</button>
+                    <button id="skipBtn" class="control-btn">⏭️ Skip</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pause Menu -->
+        <div id="pauseMenu" class="overlay hidden">
+            <div class="menu-content">
+                <h2>Game Paused</h2>
+                <button id="resumeBtn" class="menu-btn">▶️ Resume</button>
+                <button id="practiceLabBtn" class="menu-btn">🧪 Practice Lab</button>
+                <button id="settingsBtn" class="menu-btn">⚙️ Settings</button>
+                <button id="newGameBtn" class="menu-btn">🆕 New Game</button>
+                <button id="quitBtn" class="menu-btn">🚪 Quit</button>
+            </div>
+        </div>
+
+        <!-- Upgrade Selection -->
+        <div id="upgradeMenu" class="overlay hidden">
+            <div class="upgrade-content">
+                <h2>🎉 Level Up! Choose Your Upgrade:</h2>
+                <div id="upgradeOptions" class="upgrade-options">
+                    <!-- Upgrade cards will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loadingScreen" class="overlay">
+            <div class="loading-content">
+                <h1>AlphaHunters</h1>
+                <div class="loading-spinner"></div>
+                <p>Loading your letter adventure...</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Audio Elements -->
+    <audio id="bgMusic" loop>
+        <!-- Background music source will be set dynamically -->
+    </audio>
+
+    <!-- Scripts -->
+    <script src="js/core/Utils.js"></script>
+    <script src="js/core/LetterTemplates.js"></script>
+    <script src="js/core/InputManager.js"></script>
+    <script src="js/core/AudioManager.js"></script>
+    <script src="js/core/DataManager.js"></script>
+    <script src="js/core/WorldManager.js"></script>
+    <script src="js/core/BotAI.js"></script>
+    <script src="js/core/TracePanel.js"></script>
+    <script src="js/core/Recognizer.js"></script>
+    <script src="js/core/Progression.js"></script>
+    <script src="js/core/Economy.js"></script>
+    <script src="js/core/Leaderboard.js"></script>
+    <script src="js/core/LetterFollower.js"></script>
+    <script src="js/core/SkinManager.js"></script>
+    <script src="js/core/SpawnPool.js"></script>
+    <!-- GameMenu removed - using MenuManager instead -->
+    <script src="js/core/AchievementTracker.js"></script>
+    <script src="js/core/MenuManager.js"></script>
+    <!-- CharacterManager replaced by DataManager -->
+    <script src="js/core/LevelManager.js"></script>
+    <script src="js/core/PetFarm.js"></script>
+    <!-- PeerJS for multiplayer -->
+    <script src="https://unpkg.com/peerjs@1.5.2/dist/peerjs.min.js"></script>
+    <script src="js/core/OtherPlayer.js"></script>
+    <script src="js/core/ZeroSetupMultiplayer.js"></script>
+    <script src="js/core/SimpleMultiplayerUI.js"></script>
+    <script src="js/core/TeacherAuth.js"></script>
+    <script src="js/core/TeacherMultiplayerManager.js"></script>
+    <script src="js/core/TeacherDashboard.js"></script>
+    <script src="js/core/LevelEditor.js"></script>
+    <script src="js/core/LetterEditor.js"></script>
+    <script src="js/core/ChallengeManager.js"></script>
+    <script src="js/core/TimeTracker.js"></script>
+    <script src="js/core/TimeLimitManager.js"></script>
+    <script src="js/core/TraceCapture.js"></script>
+    <script src="js/ui/CombinedPanel.js"></script>
+    <script src="js/ui/ClassroomJoinUI.js"></script>
+    <script src="js/core/ClassroomConnectionManager.js"></script>
+    <!-- PDF Generation Library -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="js/Game.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

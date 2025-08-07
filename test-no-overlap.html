@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaHunter - No Overlap Test</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            font-family: 'Comic Sans MS', cursive;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        /* Visual guides */
+        .layout-guide {
+            position: fixed;
+            background: rgba(255, 0, 0, 0.1);
+            border: 2px dashed red;
+            pointer-events: none;
+            z-index: 9998;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: red;
+            font-weight: bold;
+        }
+        
+        .left-area {
+            left: 0;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+        }
+        
+        .right-area {
+            right: 0;
+            top: 0;
+            width: 300px;
+            height: 100vh;
+        }
+        
+        /* Make HUD visible */
+        #hudOverlay {
+            display: flex !important;
+        }
+        
+        .info-panel {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            text-align: center;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Layout guides -->
+    <div class="layout-guide left-area">LEFT AREA<br>(Leaderboard)</div>
+    <div class="layout-guide right-area">RIGHT AREA<br>(Friends)</div>
+    
+    <!-- Game Container -->
+    <div id="gameContainer">
+        <canvas id="gameCanvas" style="width: 800px; height: 600px; background: #4CAF50; border: 3px solid #2E7D32; margin: 50px auto; display: block;"></canvas>
+        
+        <!-- HUD Overlay with Leaderboard on LEFT -->
+        <div id="hudOverlay" class="overlay">
+            <div class="hud-left">
+                <div id="xpBar" class="hud-element">
+                    <div class="label">XP</div>
+                    <div class="bar">
+                        <div class="fill" style="width: 45%;"></div>
+                    </div>
+                </div>
+                <div id="coinCounter" class="hud-element">
+                    <span class="icon">🪙</span>
+                    <span class="count">750</span>
+                </div>
+                <div id="levelDisplay" class="hud-element">
+                    <span class="label">Level</span>
+                    <span class="value">5</span>
+                </div>
+            </div>
+            
+            <!-- Leaderboard (LEFT SIDE) -->
+            <div id="leaderboard" class="hud-element leaderboard">
+                <div class="leaderboard-header">
+                    <span class="icon">🏆</span>
+                    <span class="title">Leaderboard</span>
+                </div>
+                <div id="leaderboardList" class="leaderboard-list">
+                    <div class="leaderboard-entry multiplayer">
+                        <span class="leaderboard-rank">🥇</span>
+                        <span class="leaderboard-name">🌟 Alice</span>
+                        <span class="leaderboard-score">950</span>
+                    </div>
+                    <div class="leaderboard-entry">
+                        <span class="leaderboard-rank">🥈</span>
+                        <span class="leaderboard-name">Max</span>
+                        <span class="leaderboard-score">850</span>
+                    </div>
+                    <div class="leaderboard-entry player">
+                        <span class="leaderboard-rank">🥉</span>
+                        <span class="leaderboard-name">You</span>
+                        <span class="leaderboard-score">750</span>
+                    </div>
+                    <div class="leaderboard-entry">
+                        <span class="leaderboard-rank">4</span>
+                        <span class="leaderboard-name">Luna</span>
+                        <span class="leaderboard-score">680</span>
+                    </div>
+                    <div class="leaderboard-entry multiplayer">
+                        <span class="leaderboard-rank">5</span>
+                        <span class="leaderboard-name">💫 Bob</span>
+                        <span class="leaderboard-score">600</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Friends Panel (RIGHT SIDE) -->
+        <div class="combined-panel" style="display: block;">
+            <div class="panel-content">
+                <h3 style="text-align: center; margin-bottom: var(--space-sm); font-size: var(--ui-scale-medium);">
+                    👫 Friends
+                </h3>
+                
+                <div id="roomInfo">
+                    <div class="room-code-display">
+                        <span style="font-size: var(--ui-scale-small);">Room:</span>
+                        <span class="room-code-mini">1234</span>
+                    </div>
+                    <div class="player-list">
+                        <div class="player-entry self">
+                            <span>😊 You</span>
+                            <span>750 ⭐</span>
+                        </div>
+                        <div class="player-entry">
+                            <span>🌟 Alice</span>
+                            <span>950 ⭐</span>
+                        </div>
+                        <div class="player-entry">
+                            <span>💫 Bob</span>
+                            <span>600 ⭐</span>
+                        </div>
+                    </div>
+                    <button class="quick-action-btn danger">
+                        ❌ Leave
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="info-panel">
+        <h3>Layout Test</h3>
+        <p>Leaderboard: LEFT side (includes bots + multiplayer players)<br>
+        Friends UI: RIGHT side (multiplayer controls)<br>
+        No overlap! 🎉</p>
+    </div>
+    
+    <script>
+        // Add custom styles for the narrow friends panel
+        const style = document.createElement('style');
+        style.textContent = `
+            .quick-action-btn {
+                width: 100%;
+                padding: var(--space-xs) var(--space-sm);
+                margin: var(--space-xs) 0;
+                background: linear-gradient(135deg, #4CAF50, #45a049);
+                border: 2px solid #fff;
+                border-radius: var(--radius-sm);
+                color: white;
+                font-size: var(--ui-scale-small);
+                font-weight: bold;
+                cursor: pointer;
+                transition: all 0.2s;
+                font-family: 'Comic Sans MS', cursive;
+            }
+            
+            .quick-action-btn.danger {
+                background: linear-gradient(135deg, #f44336, #d32f2f);
+            }
+            
+            .room-code-display {
+                text-align: center;
+                padding: var(--space-sm);
+                background: rgba(0, 0, 0, 0.1);
+                border-radius: var(--radius-sm);
+                margin-bottom: var(--space-sm);
+            }
+            
+            .room-code-mini {
+                font-size: var(--ui-scale-medium);
+                font-weight: bold;
+                letter-spacing: 0.1em;
+                color: #4CAF50;
+            }
+            
+            .player-list {
+                max-height: 150px;
+                overflow-y: auto;
+                margin: var(--space-xs) 0;
+            }
+            
+            .player-entry {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                padding: var(--space-xs);
+                background: rgba(0, 0, 0, 0.05);
+                border-radius: var(--radius-sm);
+                margin-bottom: 2px;
+                font-size: var(--ui-scale-small);
+            }
+            
+            .player-entry.self {
+                background: rgba(76, 175, 80, 0.2);
+                border: 2px solid #4CAF50;
+            }
+        `;
+        document.head.appendChild(style);
+        
+        // Highlight positions
+        console.log('Leaderboard position:', document.getElementById('leaderboard').getBoundingClientRect());
+        console.log('Friends panel position:', document.querySelector('.combined-panel').getBoundingClientRect());
+    </script>
+</body>
+</html>

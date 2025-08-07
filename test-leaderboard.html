@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AlphaHunter - Leaderboard Test</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/responsive.css">
+    <style>
+        body {
+            background: linear-gradient(135deg, #87CEEB 0%, #98FB98 100%);
+            font-family: 'Comic Sans MS', cursive;
+            padding: 20px;
+        }
+        
+        .test-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .test-section {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+            flex: 1;
+            min-width: 300px;
+        }
+        
+        h2 {
+            color: #333;
+            margin-bottom: 20px;
+        }
+        
+        .status {
+            background: rgba(0, 0, 0, 0.1);
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            color: #333;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 16px;
+            font-weight: bold;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* Mock HUD */
+        #hudOverlay {
+            position: relative;
+            background: rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="text-align: center; color: white; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+        🏆 AlphaHunter Leaderboard Test
+    </h1>
+    
+    <div class="test-container">
+        <div class="test-section">
+            <h2>Game Leaderboard (with Bots)</h2>
+            
+            <!-- Mock HUD with leaderboard -->
+            <div id="hudOverlay" class="overlay">
+                <div id="leaderboard" class="hud-element leaderboard">
+                    <div class="leaderboard-header">
+                        <span class="icon">🏆</span>
+                        <span class="title">Leaderboard</span>
+                    </div>
+                    <div id="leaderboardList" class="leaderboard-list">
+                        <!-- Will be populated by test -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="status" id="botStatus">Bots not initialized</div>
+            
+            <button onclick="initializeBots()">Initialize Bots</button>
+            <button onclick="updateBotScores()">Update Bot Scores</button>
+            <button onclick="refreshLeaderboard()">Refresh Leaderboard</button>
+        </div>
+        
+        <div class="test-section">
+            <h2>Test Status</h2>
+            <div class="status" id="gameStatus">Game not initialized</div>
+            <div class="status" id="botCount">Bot count: 0</div>
+            <div class="status" id="playerScore">Player score: 0</div>
+            
+            <h3>Actions</h3>
+            <button onclick="increasePlayerScore()">+100 Player Score</button>
+            <button onclick="randomizeBotScores()">Randomize Bot Scores</button>
+            <button onclick="toggleBotActivity()">Toggle Bot Active State</button>
+        </div>
+    </div>
+    
+    <script>
+        // Mock game object
+        const mockGame = {
+            bots: [],
+            progression: {
+                totalScore: 0
+            },
+            levelManager: {
+                isLevelActive: () => false,
+                currentLevelScore: 0,
+                currentLevelXP: 0
+            },
+            dataManager: {
+                getCurrentCharacter: () => ({
+                    identity: { name: 'Test Player' }
+                })
+            }
+        };
+        
+        // Mock Bot class
+        class MockBot {
+            constructor(name) {
+                this.name = name;
+                this.score = Math.floor(Math.random() * 500);
+                this.isActive = true;
+                this.emoji = ['🤖', '👾', '🐱', '🐶', '🦊'][Math.floor(Math.random() * 5)];
+            }
+        }
+        
+        // Test functions
+        function initializeBots() {
+            const botNames = ['Max', 'Luna', 'Charlie', 'Bella', 'Oliver', 'Lucy', 'Cooper', 'Daisy'];
+            mockGame.bots = botNames.map(name => new MockBot(name));
+            
+            document.getElementById('botStatus').textContent = `Initialized ${mockGame.bots.length} bots`;
+            document.getElementById('botCount').textContent = `Bot count: ${mockGame.bots.length}`;
+            
+            refreshLeaderboard();
+        }
+        
+        function updateBotScores() {
+            mockGame.bots.forEach(bot => {
+                bot.score += Math.floor(Math.random() * 50);
+            });
+            refreshLeaderboard();
+        }
+        
+        function refreshLeaderboard() {
+            const entries = [];
+            
+            // Add player
+            entries.push({
+                name: 'You',
+                score: mockGame.progression.totalScore,
+                isPlayer: true,
+                rank: 0
+            });
+            
+            // Add bots
+            mockGame.bots.forEach(bot => {
+                if (bot.isActive) {
+                    entries.push({
+                        name: bot.name,
+                        score: bot.score,
+                        isPlayer: false,
+                        rank: 0
+                    });
+                }
+            });
+            
+            // Sort and rank
+            entries.sort((a, b) => b.score - a.score);
+            entries.forEach((entry, index) => {
+                entry.rank = index + 1;
+            });
+            
+            // Display
+            const leaderboardList = document.getElementById('leaderboardList');
+            leaderboardList.innerHTML = '';
+            
+            entries.slice(0, 10).forEach(entry => {
+                const div = document.createElement('div');
+                div.className = 'leaderboard-entry' + (entry.isPlayer ? ' player' : '');
+                
+                const rankText = entry.rank === 1 ? '🥇' : 
+                               entry.rank === 2 ? '🥈' : 
+                               entry.rank === 3 ? '🥉' : entry.rank;
+                
+                div.innerHTML = `
+                    <span class="leaderboard-rank">${rankText}</span>
+                    <span class="leaderboard-name">${entry.name}</span>
+                    <span class="leaderboard-score">${entry.score}</span>
+                `;
+                
+                leaderboardList.appendChild(div);
+            });
+            
+            document.getElementById('gameStatus').textContent = `Leaderboard updated with ${entries.length} entries`;
+        }
+        
+        function increasePlayerScore() {
+            mockGame.progression.totalScore += 100;
+            document.getElementById('playerScore').textContent = `Player score: ${mockGame.progression.totalScore}`;
+            refreshLeaderboard();
+        }
+        
+        function randomizeBotScores() {
+            mockGame.bots.forEach(bot => {
+                bot.score = Math.floor(Math.random() * 1000);
+            });
+            refreshLeaderboard();
+        }
+        
+        function toggleBotActivity() {
+            mockGame.bots.forEach(bot => {
+                bot.isActive = !bot.isActive;
+            });
+            const activeCount = mockGame.bots.filter(b => b.isActive).length;
+            document.getElementById('botStatus').textContent = `Active bots: ${activeCount}/${mockGame.bots.length}`;
+            refreshLeaderboard();
+        }
+        
+        // Initialize on load
+        window.onload = () => {
+            document.getElementById('gameStatus').textContent = 'Mock game initialized';
+            initializeBots();
+        };
+    </script>
+</body>
+</html>
